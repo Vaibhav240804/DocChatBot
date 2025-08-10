@@ -1,0 +1,4 @@
+/vector_db
+/graph_db
+.env
+/__pycache__/
