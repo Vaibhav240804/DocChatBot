@@ -37,6 +37,14 @@ GROQ_API_KEY=your_actual_api_key_here
 streamlit run streamlit_app.py
 ```
 
+OR
+
+You can also use run.py python script which helps to setup entire project and do validations
+
+```
+python run.py
+```
+
 The application will open in your browser at `http://localhost:8501`
 
 ## 📋 Features Overview
@@ -179,75 +187,3 @@ Modify the `extract_sections()` method in `MetadataExtractor` to implement custo
 ### UI Customization
 
 The Streamlit app uses custom CSS for styling. Modify the CSS in `streamlit_app.py` to change the appearance.
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"No documents found"**
-
-- Make sure you've processed URLs first
-- Check that URLs are accessible and contain content
-- Verify the vector store was created successfully
-
-**"Error processing URLs"**
-
-- Check your internet connection
-- Verify URLs are valid and accessible
-- Some sites may block automated scraping
-
-**"Groq API errors"**
-
-- Verify your API key is correct
-- Check your Groq account usage limits
-- Ensure you have sufficient credits
-
-**Memory issues with large documents**
-
-- Reduce `CHUNK_SIZE` in config
-- Process fewer URLs at once
-- Increase `TOP_K_DOCUMENTS` for more focused results
-
-### Performance Optimization
-
-- Use SSD storage for vector database
-- Increase available RAM for better performance
-- Consider using GPU for embeddings (modify requirements.txt)
-- Batch process URLs instead of processing individually
-
-## 🤝 Contributing
-
-This is a comprehensive RAG system with many extension possibilities:
-
-- Add support for more document formats (PDF, DOCX, etc.)
-- Implement advanced graph algorithms for better relationship discovery
-- Add multilingual support
-- Create API endpoints for programmatic access
-- Implement user authentication and document access controls
-
-## 📄 License
-
-This project is open source. Feel free to use, modify, and distribute according to your needs.
-
-## 🙏 Acknowledgments
-
-Built with:
-
-- [LangChain](https://python.langchain.com/) for RAG pipeline
-- [LangGraph](https://python.langchain.com/docs/langgraph) for agent workflows
-- [Groq](https://groq.com/) for fast LLM inference
-- [ChromaDB](https://www.trychroma.com/) for vector storage
-- [Streamlit](https://streamlit.io/) for the beautiful UI
-- [Sentence Transformers](https://www.sbert.net/) for embeddings
-
-## 🚀 Next Steps
-
-After setup, try these example use cases:
-
-1. **Technical Documentation**: Process your company's API docs or user guides
-2. **Educational Content**: Add course materials or tutorials
-3. **Knowledge Base**: Import FAQ or support articles
-4. **Research Papers**: Process academic or technical papers
-5. **Code Documentation**: Add developer documentation and guides
-
-The system is designed to handle complex, interconnected documentation with sophisticated retrieval capabilities. Enjoy building your intelligent documentation assistant! 🎉
