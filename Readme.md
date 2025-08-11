@@ -17,16 +17,13 @@ A comprehensive RAG (Retrieval-Augmented Generation) chatbot for technical docum
 ```bash
 # Clone or download the files
 # Install dependencies
-pip install -r requirements.txt
+pip install -r reqs.txt
 ```
 
 ### 2. Environment Setup
 
 ```bash
-# Copy environment template
-cp .env.template .env
-
-# Edit .env and add your Groq API key
+# Create .env environment file and add your Groq API key
 # Get your API key from: https://console.groq.com/keys
 GROQ_API_KEY=your_actual_api_key_here
 ```
