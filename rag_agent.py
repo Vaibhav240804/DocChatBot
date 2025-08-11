@@ -50,21 +50,63 @@ class RAGAgent:
     def _setup_prompts(self):
         """Setup all the prompts used by the agent"""
         
-        self.query_enhancement_prompt = ChatPromptTemplate.from_template("""
-        You are an expert at enhancing user queries for technical documentation search.
-        
+        self.query_enhancement_prompt = ChatPromptTemplate.from_template(
+        """
+        You are an expert at refining and expanding user queries for technical documentation search in domains such as software architecture, cloud infrastructure, APIs, frameworks, and related engineering concepts.
+
+        Inputs:
+
         Original Query: {query}
         Chat History: {chat_history}
-        
-        Enhance the original query by:
-        1. Adding relevant technical terms and synonyms
-        2. Considering the context from chat history
-        3. Expanding abbreviations and acronyms
-        4. Including related concepts
-        
-        Return an enhanced query that will retrieve more comprehensive and relevant results.
-        Keep it concise but comprehensive.
-        
+
+        Your task is to enhance the original query to maximize retrieval of relevant, high-quality documentation by:
+            - Adding precise technical terms and common synonyms used in professional documentation.
+            - Leveraging chat history to include relevant context, requirements, or constraints mentioned earlier.
+            - Expanding abbreviations and acronyms into their full forms, while keeping the short forms if widely used.
+            - Incorporating closely related concepts or technologies that improve coverage without introducing irrelevant scope creep.
+            - Maintaining accuracy and specificity — avoid speculative details or assumptions not supported by the provided query or history.
+
+        Output Requirements:
+            - Return one single enhanced query.
+            - Keep it concise yet complete (clear, information-rich, and under 30 words unless critical context requires more).
+            - Do not change the original query’s intent.
+            - Don't add anything extra like what you have improved or a summary.
+
+        Few-Shot Examples:
+
+        Example 1
+        Original Query:
+        Azure VNet peering setup
+        Chat History:
+        User previously asked about security best practices for connecting multiple regions.
+        Enhanced Query:
+        Azure Virtual Network (VNet) peering configuration and security best practices for multi-region deployment in Microsoft Azure
+
+        Example 2
+        Original Query:
+        gcp iam roles
+        Chat History:
+        Earlier discussion focused on granting least privilege access for Cloud Storage.
+        Enhanced Query:
+        Google Cloud Platform (GCP) Identity and Access Management (IAM) roles for implementing least privilege access in Cloud Storage
+
+        Example 3
+        Original Query:
+        k8s ingress setup
+        Chat History:
+        User previously discussed SSL termination and custom domain configuration.
+        Enhanced Query:
+        Kubernetes (k8s) Ingress controller setup with SSL/TLS termination and custom domain configuration
+
+        Example 4
+        Original Query:
+        aws s3 replication
+        Chat History:
+        No relevant prior context.
+        Enhanced Query:
+        Amazon Web Services (AWS) S3 cross-region replication setup and configuration
+
+        Final Output Format:
         Enhanced Query:
         """)
         
@@ -74,9 +116,9 @@ class RAGAgent:
         Query: {query}
         
         Extract any mentions of:
-        - topic: subject area or domain
-        - author: specific author names
-        - department: organizational department
+        - topic: subject area or domain(If there are multiple topics, concatinate them and return as single string not an array)
+        - author: specific author names(If there are multiple authors, concatinate them and return as single string not an array)
+        - department: organizational department(If there are multiple departments, concatinate them and return as single string not an array)
         - section: specific section names
         - prerequisites: mentioned prerequisites or dependencies
         
@@ -196,16 +238,15 @@ class RAGAgent:
         try:
             # Search with original query
             original_results = self.vector_manager.search_similar(
-                state["query"], 
+                state["enhanced_query"], 
                 state["metadata_filters"], 
-                k=3
+                k=4
             )
             
             # Search with enhanced query
             enhanced_results = self.vector_manager.search_similar(
                 state["enhanced_query"], 
-                state["metadata_filters"], 
-                k=3
+                k=4
             )
             
             # Combine and deduplicate results
@@ -309,6 +350,7 @@ class RAGAgent:
                     'title': metadata.get('title', 'Unknown'),
                     'url': metadata.get('url', ''),
                     'section': metadata.get('section', ''),
+                    'content': content,
                     'similarity_score': doc.get('similarity_score', 0)
                 }
                 sources.append(source)
@@ -336,11 +378,11 @@ class RAGAgent:
             
             # Get chat history
             chat_history = self._format_chat_history(state.get("memory", []))
-            
+            print(f"This is an enhanced query: {state['enhanced_query']}")
             # Generate answer
             response = self.llm.invoke(
                 self.answer_generation_prompt.format(
-                    query=state["query"],
+                    query=state["enhanced_query"],
                     chat_history=chat_history,
                     context=context,
                     related_docs=related_docs_text,

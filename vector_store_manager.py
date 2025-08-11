@@ -178,7 +178,7 @@ class VectorStoreManager:
             # Prepare node attributes (avoid keyword conflicts)
             node_attrs = {}
             for k, v in document_metadata.items():
-                if v and k not in ['text_content', 'title']:  # Exclude title to avoid conflict
+                if v and k not in ['text_content', 'title', 'topic']:  # Exclude title and topic to avoid conflict
                     # Convert lists to strings for storage
                     if isinstance(v, list):
                         node_attrs[f"{k}_list"] = str(v)
@@ -189,7 +189,7 @@ class VectorStoreManager:
             self.knowledge_graph.add_node(
                 url,
                 node_title=title,  # Use node_title instead of title
-                topic=topic,
+                topic=topic if len(topic) == 1 else ' '.join(topic),
                 node_type='document',
                 **node_attrs
             )
@@ -382,3 +382,19 @@ class VectorStoreManager:
         except Exception as e:
             print(f"Error getting collection stats: {str(e)}")
             return {"error": str(e)}
+        
+    def get_all_graph_nodes(self) -> List[Dict]:
+        """Get all nodes in the knowledge graph"""
+        try:
+            nodes = []
+            for node in self.knowledge_graph.nodes():
+                node_data = self.knowledge_graph.nodes[node]
+                nodes.append({
+                    'id': node,
+                    'title': node_data.get('node_title', 'Unknown'),
+                    **{k: v for k, v in node_data.items() if k != 'node_title'}
+                })
+            return nodes
+        except Exception as e:
+            print(f"Error getting all graph nodes: {str(e)}")
+            return []

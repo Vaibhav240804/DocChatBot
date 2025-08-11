@@ -36,7 +36,8 @@ st.markdown("""
     }
     
     .source-card {
-        background: white;
+        background: black;
+        color: white;
         padding: 1rem;
         border-radius: 8px;
         border-left: 4px solid #667eea;
@@ -45,7 +46,8 @@ st.markdown("""
     }
     
     .prereq-card {
-        background: #fff3cd;
+        background: black;
+        color: white;
         padding: 0.8rem;
         border-radius: 8px;
         border-left: 4px solid #ffc107;
@@ -53,7 +55,8 @@ st.markdown("""
     }
     
     .related-card {
-        background: #d1ecf1;
+        background: black;
+        color: white;
         padding: 0.8rem;
         border-radius: 8px;
         border-left: 4px solid #17a2b8;
@@ -276,6 +279,7 @@ def display_message(message: Dict):
                             <strong>Source {i}: {source.get('title', 'Unknown Document')}</strong><br>
                             <em>Section: {source.get('section', 'Main Content')}</em><br>
                             <em>Confidence: {confidence}</em><br>
+                            <p>Content: {source.get('content', 'No preview available')}</p>
                             {f'<a href="{source["url"]}" target="_blank">🔗 View Document</a>' if source.get('url') else ''}
                         </div>
                         """, unsafe_allow_html=True)
@@ -440,7 +444,25 @@ def show_system_stats():
         
         st.metric("Graph Nodes", stats.get('graph_nodes', 0))
         st.metric("Graph Edges", stats.get('graph_edges', 0))
-        
+        # Display knowledge graph structure
+        st.markdown("#### 🗺️ Knowledge Graph Structure")
+        try:
+            graph_nodes = st.session_state.vector_manager.get_all_graph_nodes()
+            if graph_nodes:
+                for node in graph_nodes:
+                    st.markdown(f"""
+                    <div style="background: #23272f; color: #fff; border-radius: 8px; margin-bottom: 0.7rem; padding: 1rem; border-left: 5px solid #764ba2; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
+                        <strong style="font-size: 1.1em;">{node.get('title', node.get('id', 'Unknown'))}</strong>
+                        <span style="color: #aaa; font-size: 0.9em;">(ID: {node.get('id')})</span>
+                        <ul style="margin-top: 0.5em;">
+                            {''.join(f"<li><b>{k}:</b> {v}</li>" for k, v in node.items() if k not in ['id', 'title'])}
+                        </ul>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No nodes found in the knowledge graph.")
+        except Exception as e:
+            st.error(f"Error displaying graph nodes: {str(e)}")
         # Calculate graph density if we have nodes
         nodes = stats.get('graph_nodes', 0)
         edges = stats.get('graph_edges', 0)
