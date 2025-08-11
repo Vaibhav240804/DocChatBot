@@ -33,13 +33,7 @@ GROQ_API_KEY=your_actual_api_key_here
 
 ### 3. Run the Application
 
-```bash
-streamlit run streamlit_app.py
-```
-
-OR
-
-You can also use run.py python script which helps to setup entire project and do validations
+Use the run.py python script, which helps to set up the entire project and do validations
 
 ```
 python run.py
